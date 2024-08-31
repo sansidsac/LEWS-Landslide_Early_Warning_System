@@ -1,8 +1,20 @@
 import React from 'react';
 import Navbar from './Navbar';
+import axios from 'axios';
 
 const Rehab = () => {
-  return (
+
+    const handleSubmit=()=>{
+        const data={
+            fname,
+            area,
+            description,
+            aadhar
+        };
+        axios.post('http://localhost:5000/api/rehab',data)
+    }
+
+    return (
     <>
         <Navbar/>
     <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-8 mt-10">
@@ -39,7 +51,7 @@ const Rehab = () => {
         <button
           type="submit"
           className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          onClick={() => {}}
+          onClick={handleSubmit}
           >
           Submit
         </button>
