@@ -3,13 +3,13 @@ from flask import Flask, request, jsonify
 import requests
 import os
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 TELEGRAM_BOT_TOKEN = os.getenv('6571192837:AAFG994S5fuEmrbfxDluOPKMCgj0kKzJZCA')
-TELEGRAM_CHAT_ID = os.getenv('landslidealertbot')
+TELEGRAM_CHAT_ID = os.getenv('6571192837')
 
 def send_telegram_message(message, chat_id):
     """Send a message to a Telegram chat using the bot API."""
@@ -18,9 +18,19 @@ def send_telegram_message(message, chat_id):
         'chat_id': chat_id,
         'text': message
     }
-    response = requests.post(url, data=payload)
-    logging.info(f'Sent message to {chat_id}: {message}')
-    return response
+    try:
+        response = requests.post(url, data=payload)
+        response.raise_for_status()
+        logging.info(f'Sent message to {chat_id}: {message}')
+        return response
+    except requests.exceptions.HTTPError as errh:
+        logging.error(f'HTTP Error: {errh}')
+    except requests.exceptions.ConnectionError as errc:
+        logging.error(f'Error Connecting: {errc}')
+    except requests.exceptions.Timeout as errt:
+        logging.error(f'Timeout Error: {errt}')
+    except requests.exceptions.RequestException as err:
+        logging.error(f'Something went wrong: {err}')
 
 @app.route('/send_alert', methods=['POST'])
 def send_alert():
@@ -30,18 +40,18 @@ def send_alert():
     region = data.get('region')
     chat_id = data.get('chat_id', TELEGRAM_CHAT_ID)
 
-    if not region:
-        logging.warning('Region is required but not provided')
-        return jsonify({'error': 'Region is required'}), 400
+    if not region or not chat_id:
+        logging.warning('Region and chat_id are required but not provided')
+        return jsonify({'error': 'Region and chat_id are required'}), 400
 
     message = f'Alert: Possible landslide detected in {region}.'
     response = send_telegram_message(message, chat_id)
 
-    if response.status_code == 200:
+    if response and response.status_code == 200:
         return jsonify({'status': 'success', 'message': 'Alert sent successfully!'}), 200
     else:
         logging.error(f'Failed to send message: {response.text}')
         return jsonify({'error': 'Failed to send message', 'details': response.json()}), 500
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
