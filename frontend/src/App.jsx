@@ -1,12 +1,18 @@
-import Navbar from './components/Navbar'
-import Home from './components/Home'
+import Home from './components/Home.jsx'
+import { Route,Routes } from 'react-router-dom'
+import ModelPredict from './components/ModelPredict.jsx'
+import Rehab from './components/Rehab.jsx'
+
 
 function App() {
 
   return (
     <>
-      <Navbar/>
-      <Home/>
+      <Routes>
+        <Route path="/" element={<Home/>}></Route>
+        <Route path="/regions" element={<ModelPredict/>}></Route>
+        <Route path="/rehab" element={<Rehab/>}></Route>
+      </Routes>
     </>
   )
 }
