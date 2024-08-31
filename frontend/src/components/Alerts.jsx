@@ -11,7 +11,7 @@ const Alerts = ({ region = "Wuhan", scale = 80 }) => {
 
   const handleActionClick = () => {
     setIsVisible(false);
-    navigate('/');
+    navigate('/telebot');
   };
 
   if (!isVisible) {
@@ -43,7 +43,7 @@ const Alerts = ({ region = "Wuhan", scale = 80 }) => {
           <div className="font-bold text-2xl">Warning</div>
           <div className="text-lg">
             {region} is {scale}% Affected!!! Take immediate action&nbsp;&nbsp;
-            <Link to="/" onClick={handleActionClick}>
+            <Link to="/telebot" onClick={handleActionClick}>
               <span className="text-sm text-blue-900">Take action &rarr;</span>
             </Link>
           </div>
