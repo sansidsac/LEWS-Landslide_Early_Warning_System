@@ -1,0 +1,47 @@
+import logging
+from flask import Flask, request, jsonify
+import requests
+import os
+
+app = Flask(_name_)
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
+TELEGRAM_BOT_TOKEN = os.getenv('6571192837:AAFG994S5fuEmrbfxDluOPKMCgj0kKzJZCA')
+TELEGRAM_CHAT_ID = os.getenv('landslidealertbot')
+
+def send_telegram_message(message, chat_id):
+    """Send a message to a Telegram chat using the bot API."""
+    url = f'https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage'
+    payload = {
+        'chat_id': chat_id,
+        'text': message
+    }
+    response = requests.post(url, data=payload)
+    logging.info(f'Sent message to {chat_id}: {message}')
+    return response
+
+@app.route('/send_alert', methods=['POST'])
+def send_alert():
+    """API endpoint to send an alert message via Telegram."""
+    data = request.json
+
+    region = data.get('region')
+    chat_id = data.get('chat_id', TELEGRAM_CHAT_ID)
+
+    if not region:
+        logging.warning('Region is required but not provided')
+        return jsonify({'error': 'Region is required'}), 400
+
+    message = f'Alert: Possible landslide detected in {region}.'
+    response = send_telegram_message(message, chat_id)
+
+    if response.status_code == 200:
+        return jsonify({'status': 'success', 'message': 'Alert sent successfully!'}), 200
+    else:
+        logging.error(f'Failed to send message: {response.text}')
+        return jsonify({'error': 'Failed to send message', 'details': response.json()}), 500
+
+if _name_ == '_main_':
+    app.run(debug=True, host='0.0.0.0', port=5000)
