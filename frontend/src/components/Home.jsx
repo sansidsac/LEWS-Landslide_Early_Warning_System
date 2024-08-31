@@ -1,4 +1,5 @@
 import React from 'react'
+import Navbar from './Navbar'
 import LeftBar from './LeftBar'
 import Alerts from './Alerts'
 import MapArea from './MapArea'
@@ -7,6 +8,8 @@ import RightBar from './RightBar'
 
 const Home = () => {
   return (
+    <>
+    <Navbar/>
     <div className="flex min-h-screen">
     <div className="w-1/5 bg-sky-700">
       <LeftBar/>
@@ -27,6 +30,7 @@ const Home = () => {
       {/* Right Sidebar Content */}
     </div>
   </div>
+    </>
   )
 }
 
